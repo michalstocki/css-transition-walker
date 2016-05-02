@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>css-transition-walker Demos</title>
+    <script src="src/CSSTransitionWalker.js"></script>
+</head>
+<body>
+
+<!-- Example 1 -->
+<section class="example">
+    <h2> Example 1</h2>
+    <style>
+        .slider {
+            width: 130px;
+        }
+
+        .tester-container {
+            height: 50px;
+            width: 130px;
+        }
+
+        .tester {
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background-color: #f0604e;
+            margin-left: 50%;
+        }
+
+        .tester.circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+    </style>
+    <div class="tester-container">
+        <div class="tester" onclick="this.classList.toggle('circle')"></div>
+    </div>
+    <input title="Transition progress" class="slider"
+           type="range" min="0" max="100" step="1"
+           oninput="go1(this.value)" onchange="go1(this.value)" value="0">
+
+
+    <script type="text/javascript">
+        var tester = document.querySelector('.tester');
+        var walker = new CSSTransitionWalker(tester);
+        walker.captureInitialState();
+        tester.classList.add('circle');
+        walker.captureFinalState();
+        tester.classList.remove('circle');
+
+        function go1(value) {
+            walker.goTo(value / 100);
+        }
+    </script>
+</section>
+</body>
+</html>
