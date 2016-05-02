@@ -1,0 +1,25 @@
+{
+  "name": "css-transition-walker",
+  "version": "0.0.1",
+  "description": "Library allowing manipulating CSS transitions with JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michalstocki/css-transition-walker.git"
+  },
+  "keywords": [
+    "css",
+    "transitions",
+    "gesture",
+    "animation"
+  ],
+  "author": "Michał Stocki",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michalstocki/css-transition-walker/issues"
+  },
+  "homepage": "https://github.com/michalstocki/css-transition-walker#readme"
+}
