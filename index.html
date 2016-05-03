@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>css-transition-walker Demos</title>
+    <link rel="stylesheet" href="src/demo/main.css" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,400italic,500italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
     <script src="src/CSSTransitionWalker.js"></script>
 </head>
 <body>
-
+<h1>Example usages of the CSS Transition Walker</h1>
 <!-- Example 1 -->
 <section class="example">
     <h2> Example 1</h2>
@@ -15,28 +17,28 @@
     </p>
     <style scoped>
         .slider1 {
-            width: 130px;
+            width: 200px;
         }
 
         .tester-container1 {
-            height: 50px;
-            width: 130px;
+            height: 150px;
+            width: 200px;
             position: relative;
         }
 
         .tester1 {
             transform: translateX(-50%) translateY(-50%);
             position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: #f0604e;
+            width: 100px;
+            height: 100px;
+            background-color: #F44336;
             top: 50%;
             left: 50%;
         }
 
         .tester1.circle {
-            width: 42px;
-            height: 42px;
+            width: 115px;
+            height: 115px;
             border-radius: 50%;
         }
     </style>
@@ -74,30 +76,30 @@
     </p>
     <style scoped>
         .slider2 {
-            width: 130px;
+            width: 200px;
         }
 
         .tester-container2 {
-            height: 50px;
-            width: 130px;
+            height: 150px;
+            width: 200px;
             position: relative;
         }
 
         .tester2 {
             transform: translateX(-50%) translateY(-50%);
             position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: #9f24ae;
+            width: 100px;
+            height: 100px;
+            background-color: #9C27B0;
             top: 50%;
             left: 50%;
-            transition: all 300ms;
+            transition: all ease 300ms;
             cursor: pointer;
         }
 
         .tester2.circle {
-            width: 42px;
-            height: 42px;
+            width: 115px;
+            height: 115px;
             border-radius: 50%;
         }
     </style>
