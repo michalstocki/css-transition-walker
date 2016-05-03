@@ -12,5 +12,4 @@ jspm_packages
 .idea
 
 # Compiled sources
-src/**/*.js
-src/**/*.js.map
+
