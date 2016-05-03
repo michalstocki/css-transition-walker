@@ -18,6 +18,7 @@ class CSSTransitionWalker {
     public captureFinalState():void {
         // todo: emit warning when the final value unit is different than the source value unit (and both are non-zero values)
         const finalStyle = window.getComputedStyle(this.element);
+        this.disableTransition();
         let propertyName:string;
         for (propertyName of supportedProperties) {
             if (this.initStyleList[propertyName] !== finalStyle[propertyName]) {
@@ -29,6 +30,8 @@ class CSSTransitionWalker {
                 });
             }
         }
+        // todo: fix issue with a transition running after capturing a final state (transition runs before the end state class will be removed by user)
+        this.enableTransition();
         this.initStyleList = null;
     }
 
@@ -37,7 +40,7 @@ class CSSTransitionWalker {
      * @param progress number between `0` (initial state) and `1` (final state).
      */
     public goTo(progress:number):void {
-        // todo: inspect issue braking `goTo` when `transition` CSS property is applied to the element
+        this.disableTransition();
         let trans:Transition;
         for (trans of this.transitions) {
             this.element.style[trans.property] = this.calcValue(trans, progress) + trans.unit;
@@ -52,6 +55,15 @@ class CSSTransitionWalker {
         for (transition of this.transitions) {
             this.element.style.removeProperty(transition.property);
         }
+        this.enableTransition();
+    }
+
+    private disableTransition():void {
+        this.element.style.transition = 'none';
+    }
+
+    private enableTransition():void {
+        this.element.style.removeProperty('transition');
     }
 
     private calcValue(transition:Transition, progress:number):number {
@@ -77,7 +89,11 @@ interface Transition {
 }
 
 var supportedProperties = [
-    "borderRadius",
+    "border-radius",
     "width",
-    "height"
+    "height",
+    "top",
+    "left",
+    "right",
+    "bottom"
 ];
