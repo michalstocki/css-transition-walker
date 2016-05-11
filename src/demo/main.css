@@ -26,6 +26,12 @@ section.example {
 	transition: box-shadow 200ms;
 }
 
+section.example::after {
+	display:block;
+	clear: both;
+	content: "";
+}
+
 section.example h2 {
 	font-size: 20px;
 	font-weight: 500;
@@ -35,6 +41,13 @@ section.example h2 {
 section.example .description {
 	font-size: 14px;
 	line-height: 24px;
+}
+
+section.example .code-container {
+	max-width: 60%;
+	float: right;
+	font-size: 12px;
+	border-radius: 5px;
 }
 
 section.example:hover {

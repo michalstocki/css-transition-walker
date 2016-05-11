@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <title>css-transition-walker Demos</title>
     <link rel="stylesheet" href="src/demo/main.css" type="text/css">
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,400italic,500italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,400italic,500italic&subset=latin-ext,latin'
+          rel='stylesheet' type='text/css'>
     <script src="src/CSSTransitionWalker.js"></script>
+    <link href="demo/prism.css" rel="stylesheet"/>
+    <script src="demo/prism.js"></script>
 </head>
 <body>
 <h1>Example usages of the CSS Transition Walker</h1>
@@ -42,29 +45,40 @@
             border-radius: 50%;
         }
     </style>
+    <pre class="code-container"><code class="language-javascript"><!--
+-->var element = document.querySelector('.tester1');
+var walker = new CSSTransitionWalker(element);
+
+walker.captureInitialState();
+element.classList.add('circle');
+walker.captureFinalState();
+element.classList.remove('circle');
+
+function handleSliderMove(value) {
+    walker.goTo(value / 100);
+}<!--
+--></code></pre>
     <div class="tester-container1">
         <div class="tester1"></div>
     </div>
     <input title="Transition progress" class="slider1"
            type="range" min="0" max="100" step="1"
-           oninput="go1(this.value)" onchange="go1(this.value)" value="0">
+           oninput="handleSliderMove1(this.value)" value="0">
 
     <script type="text/javascript">
-        var go1;
-        (function() {
-            var tester = document.querySelector('.tester1');
-            var walker = new CSSTransitionWalker(tester);
+        (function(global) {
+            var element = document.querySelector('.tester1');
+            var walker = new CSSTransitionWalker(element);
             walker.captureInitialState();
-            tester.classList.add('circle');
+            element.classList.add('circle');
             walker.captureFinalState();
-            tester.classList.remove('circle');
-            go1 = function(value) {
+            element.classList.remove('circle');
+            global.handleSliderMove1 = function(value) {
                 walker.goTo(value / 100);
             };
-        })();
+        })(this);
     </script>
 </section>
-
 
 
 <!-- Example 2 -->
