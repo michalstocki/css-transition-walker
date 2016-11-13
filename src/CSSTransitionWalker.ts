@@ -9,8 +9,7 @@ class CSSTransitionWalker {
     public captureInitialState():void {
         // todo: get current window from given element
         const initStyle:CSSStyleDeclaration = window.getComputedStyle(this.element);
-        let propertyName:string;
-        for (propertyName of supportedProperties) {
+        for (const propertyName of supportedProperties) {
             this.initStyleList[propertyName] = initStyle[propertyName];
         }
     }
@@ -19,8 +18,7 @@ class CSSTransitionWalker {
         // todo: emit warning when the final value unit is different than the source value unit (and both are non-zero values)
         const finalStyle = window.getComputedStyle(this.element);
         this.disableTransition();
-        let propertyName:string;
-        for (propertyName of supportedProperties) {
+        for (const propertyName of supportedProperties) {
             if (this.initStyleList[propertyName] !== finalStyle[propertyName]) {
                 this.transitions.push({
                     property: propertyName,
@@ -41,8 +39,7 @@ class CSSTransitionWalker {
      */
     public goTo(progress:number):void {
         this.disableTransition();
-        let trans:Transition;
-        for (trans of this.transitions) {
+        for (const trans of this.transitions) {
             this.element.style[trans.property] = this.calcValue(trans, progress) + trans.unit;
         }
     }
@@ -51,8 +48,7 @@ class CSSTransitionWalker {
      * Removes all inline CSS. Allows CSS transition move naturally.
      */
     public release():void {
-        let transition:Transition;
-        for (transition of this.transitions) {
+        for (const transition of this.transitions) {
             this.element.style.removeProperty(transition.property);
         }
         this.enableTransition();
@@ -88,7 +84,7 @@ interface Transition {
     unit:string;
 }
 
-var supportedProperties = [
+const supportedProperties = [
     "border-radius",
     "width",
     "height",
