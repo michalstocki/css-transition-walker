@@ -18,7 +18,7 @@
 <!----------------------------------------------------------->
 
 <section class="example">
-    <h2> Example 1</h2>
+    <h2> Example 1 – simple slider</h2>
     <p class="description">
         Simple slider to control progress of the transition.
     </p>
@@ -89,7 +89,7 @@ function handleSliderMove(value) {
 <!----------------------------------------------------------->
 
 <section class="example">
-    <h2> Example 2</h2>
+    <h2> Example 2 – slider with snapping to the edge state</h2>
     <p class="description">
         Element with a <span class="code">transition</span> property applied – click the object to toggle state.
         Slider value is "snapped" to a edge value. After snapping, object moves with a CSS transition to an edge state.
@@ -123,6 +123,19 @@ function handleSliderMove(value) {
             border-radius: 50%;
         }
     </style>
+
+    <pre class="code-container"><code class="language-javascript"><!--
+-->function onChange(el) {
+    walker.release();
+    if (el.value > 50) {
+        tester.classList.add('circle');
+        el.value = 100;
+    } else {
+        tester.classList.remove('circle');
+        el.value = 0;
+    }
+};<!--
+--></code></pre>
     <div class="tester-container2">
         <div class="tester2" onclick="this.classList.toggle('circle')"></div>
     </div>
@@ -158,5 +171,105 @@ function handleSliderMove(value) {
         })();
     </script>
 </section>
+
+<!----------------------------------------------------------->
+<!------------------------ Example 3 ------------------------>
+<!----------------------------------------------------------->
+
+<section class="example">
+    <h2> Example 3 – slider for a 3D transition</h2>
+    <p class="description">
+        Element with a <span class="code">transition</span> property applied to a <span class="code">transform</span>
+        property – click the object to toggle state.
+    </p>
+    <style scoped>
+        .slider3 {
+            width: 200px;
+        }
+
+        .tester-container3 {
+            height: 90px;
+            width: 140px;
+            position: relative;
+            perspective: 800px;
+            transform-origin: right center;
+            margin: 30px;
+        }
+
+        .tester3-card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            cursor: pointer;
+        }
+
+        .tester3-card .front, .tester3-card .back {
+            margin: 0;
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+
+        .tester3-card .front {
+            background-color: #9C27B0;
+        }
+
+        .tester3-card .back {
+            background: #F44336;
+            transform: rotateY( 180deg );
+        }
+
+        .tester3-card.flipped {
+            transform: rotateY( 180deg );
+        }
+    </style>
+
+    <pre class="code-container"><code class="language-css"><!--
+-->/* ... */
+.card {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    cursor: pointer;
+}
+
+.card.flipped {
+    transform: rotateY( 180deg );
+}<!--
+--></code></pre>
+
+    <div class="tester-container3">
+        <div class="tester3-card" onclick="this.classList.toggle('flipped')">
+            <div class="front"></div>
+            <div class="back"></div>
+        </div>
+    </div>
+    <input title="Transition progress" class="slider3"
+           type="range" min="0" max="100" step="1"
+           oninput="go3(this.value)" value="0">
+
+    <script type="text/javascript">
+      var go3;
+      (function() {
+        var tester = document.querySelector('.tester3-card');
+        var walker = new CSSTransitionWalker(tester);
+        walker.captureInitialState();
+        tester.classList.add('flipped');
+        walker.captureFinalState();
+        tester.classList.remove('flipped');
+
+        go3 = function(value) {
+          walker.goTo(value / 100);
+        };
+      })();
+    </script>
+</section>
+
 </body>
 </html>
