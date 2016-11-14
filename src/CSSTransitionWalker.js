@@ -20,7 +20,7 @@ var CSSTransitionWalker = (function () {
             var propertyName = supportedProperties_2[_i];
             if (this.initStyleList[propertyName] !== finalStyle[propertyName]) {
                 this.transitions.push({
-                    property: propertyName,
+                    propertyName: propertyName,
                     initValue: this.getValue(this.initStyleList[propertyName]),
                     finalValue: this.getValue(finalStyle[propertyName]),
                     unit: this.getUnit(finalStyle[propertyName])
@@ -29,7 +29,7 @@ var CSSTransitionWalker = (function () {
         }
         // todo: fix issue with a transition running after capturing a final state (transition runs before the end state class will be removed by user)
         this.enableTransition();
-        this.initStyleList = null;
+        this.initStyleList = {};
     };
     /**
      * Move transition of the element to a specific state.
@@ -38,8 +38,16 @@ var CSSTransitionWalker = (function () {
     CSSTransitionWalker.prototype.goTo = function (progress) {
         this.disableTransition();
         for (var _i = 0, _a = this.transitions; _i < _a.length; _i++) {
-            var trans = _a[_i];
-            this.element.style[trans.property] = this.calcValue(trans, progress) + trans.unit;
+            var transition = _a[_i];
+            var currentValue = this.calcValue(transition, progress);
+            var currentCSSValue = void 0;
+            if (Array.isArray(currentValue)) {
+                currentCSSValue = "matrix3d(" + currentValue.join(', ') + ")";
+            }
+            else {
+                currentCSSValue = currentValue + transition.unit;
+            }
+            this.element.style[transition.propertyName] = currentCSSValue;
         }
     };
     /**
@@ -48,7 +56,7 @@ var CSSTransitionWalker = (function () {
     CSSTransitionWalker.prototype.release = function () {
         for (var _i = 0, _a = this.transitions; _i < _a.length; _i++) {
             var transition = _a[_i];
-            this.element.style.removeProperty(transition.property);
+            this.element.style.removeProperty(transition.propertyName);
         }
         this.enableTransition();
     };
@@ -59,11 +67,30 @@ var CSSTransitionWalker = (function () {
         this.element.style.removeProperty('transition');
     };
     CSSTransitionWalker.prototype.calcValue = function (transition, progress) {
-        return transition.initValue + (transition.finalValue - transition.initValue) * progress;
+        var _this = this;
+        var result;
+        if (Array.isArray(transition.initValue) && Array.isArray(transition.finalValue)) {
+            result = transition.initValue.map(function (n, i) { return _this.calcValueNumber(n, transition.finalValue[i], progress); });
+        }
+        else if (!Array.isArray(transition.initValue) && !Array.isArray(transition.finalValue)) {
+            result = this.calcValueNumber(transition.initValue, transition.finalValue, progress);
+        }
+        return result;
+    };
+    CSSTransitionWalker.prototype.calcValueNumber = function (initValue, finalValue, progress) {
+        return initValue + (finalValue - initValue) * progress;
     };
     CSSTransitionWalker.prototype.getValue = function (propertyValue) {
-        // todo: support more complex property values: background-color, transform, etc.
-        return parseFloat(propertyValue);
+        // todo: support more complex propertyName values: background-color, transform, etc.
+        var value;
+        if (/matrix/.test(propertyValue)) {
+            var matrixCopy = propertyValue.replace(/^\w*\(/, '').replace(')', '');
+            value = matrixCopy.split(/\s*,\s*/).map(function (n) { return parseFloat(n); });
+        }
+        else {
+            value = parseFloat(propertyValue);
+        }
+        return value;
     };
     CSSTransitionWalker.prototype.getUnit = function (propertyValue) {
         // todo: support more complex CSS units: background-color, transform, etc.
@@ -78,6 +105,7 @@ var supportedProperties = [
     "top",
     "left",
     "right",
-    "bottom"
+    "bottom",
+    "transform"
 ];
 //# sourceMappingURL=CSSTransitionWalker.js.map

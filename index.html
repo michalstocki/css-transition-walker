@@ -70,17 +70,17 @@ function handleSliderMove(value) {
            oninput="handleSliderMove1(this.value)" value="0">
 
     <script type="text/javascript">
-        (function(global) {
-            var element = document.querySelector('.tester1');
-            var walker = new CSSTransitionWalker(element);
-            walker.captureInitialState();
-            element.classList.add('circle');
-            walker.captureFinalState();
-            element.classList.remove('circle');
-            global.handleSliderMove1 = function(value) {
-                walker.goTo(value / 100);
-            };
-        })(this);
+      (function(global) {
+        var element = document.querySelector('.tester1');
+        var walker = new CSSTransitionWalker(element);
+        walker.captureInitialState();
+        element.classList.add('circle');
+        walker.captureFinalState();
+        element.classList.remove('circle');
+        global.handleSliderMove1 = function(value) {
+          walker.goTo(value / 100);
+        };
+      })(this);
     </script>
 </section>
 
@@ -144,31 +144,31 @@ function handleSliderMove(value) {
            oninput="go2(this.value)" onchange="release2(this)" value="0">
 
     <script type="text/javascript">
-        var go2;
-        var release2;
-        (function() {
-            var tester = document.querySelector('.tester2');
-            var walker = new CSSTransitionWalker(tester);
-            walker.captureInitialState();
+      var go2;
+      var release2;
+      (function() {
+        var tester = document.querySelector('.tester2');
+        var walker = new CSSTransitionWalker(tester);
+        walker.captureInitialState();
+        tester.classList.add('circle');
+        walker.captureFinalState();
+        tester.classList.remove('circle');
+
+        go2 = function(value) {
+          walker.goTo(value / 100);
+        };
+
+        release2 = function(el) {
+          walker.release();
+          if (el.value > 50) {
             tester.classList.add('circle');
-            walker.captureFinalState();
+            el.value = 100;
+          } else {
             tester.classList.remove('circle');
-
-            go2 = function(value) {
-                walker.goTo(value / 100);
-            };
-
-            release2 = function(el) {
-                walker.release();
-                if (el.value > 50) {
-                    tester.classList.add('circle');
-                    el.value = 100;
-                } else {
-                    tester.classList.remove('circle');
-                    el.value = 0;
-                }
-            };
-        })();
+            el.value = 0;
+          }
+        };
+      })();
     </script>
 </section>
 
@@ -203,6 +203,7 @@ function handleSliderMove(value) {
             transform-style: preserve-3d;
             transition: transform 1s;
             cursor: pointer;
+            transform: rotate3d(1, 2, -1, 1deg);
         }
 
         .tester3-card .front, .tester3-card .back {
@@ -220,11 +221,11 @@ function handleSliderMove(value) {
 
         .tester3-card .back {
             background: #F44336;
-            transform: rotateY( 180deg );
+            transform: rotateY(180deg);
         }
 
         .tester3-card.flipped {
-            transform: rotateY( 180deg );
+            transform: rotateY(180deg);
         }
     </style>
 
@@ -252,10 +253,11 @@ function handleSliderMove(value) {
     </div>
     <input title="Transition progress" class="slider3"
            type="range" min="0" max="100" step="1"
-           oninput="go3(this.value)" value="0">
+           oninput="go3(this.value)" onchange="release3(this)" value="0">
 
     <script type="text/javascript">
       var go3;
+      var release3;
       (function() {
         var tester = document.querySelector('.tester3-card');
         var walker = new CSSTransitionWalker(tester);
@@ -266,6 +268,17 @@ function handleSliderMove(value) {
 
         go3 = function(value) {
           walker.goTo(value / 100);
+        };
+
+        release3 = function(el) {
+          walker.release();
+          if (el.value > 50) {
+            tester.classList.add('flipped');
+            el.value = 100;
+          } else {
+            tester.classList.remove('flipped');
+            el.value = 0;
+          }
         };
       })();
     </script>

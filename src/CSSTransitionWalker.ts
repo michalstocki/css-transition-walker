@@ -21,7 +21,7 @@ class CSSTransitionWalker {
         for (const propertyName of supportedProperties) {
             if (this.initStyleList[propertyName] !== finalStyle[propertyName]) {
                 this.transitions.push({
-                    property: propertyName,
+                    propertyName: propertyName,
                     initValue: this.getValue(this.initStyleList[propertyName]),
                     finalValue: this.getValue(finalStyle[propertyName]),
                     unit: this.getUnit(finalStyle[propertyName])
@@ -30,7 +30,7 @@ class CSSTransitionWalker {
         }
         // todo: fix issue with a transition running after capturing a final state (transition runs before the end state class will be removed by user)
         this.enableTransition();
-        this.initStyleList = null;
+        this.initStyleList = {};
     }
 
     /**
@@ -39,8 +39,15 @@ class CSSTransitionWalker {
      */
     public goTo(progress:number):void {
         this.disableTransition();
-        for (const trans of this.transitions) {
-            this.element.style[trans.property] = this.calcValue(trans, progress) + trans.unit;
+        for (const transition of this.transitions) {
+            const currentValue = this.calcValue(transition, progress);
+            let currentCSSValue:string;
+            if (Array.isArray(currentValue)) {
+                currentCSSValue = `matrix3d(${currentValue.join(', ')})`;
+            } else {
+                currentCSSValue = currentValue + transition.unit;
+            }
+            this.element.style[transition.propertyName] = currentCSSValue;
         }
     }
 
@@ -49,7 +56,7 @@ class CSSTransitionWalker {
      */
     public release():void {
         for (const transition of this.transitions) {
-            this.element.style.removeProperty(transition.property);
+            this.element.style.removeProperty(transition.propertyName);
         }
         this.enableTransition();
     }
@@ -62,13 +69,30 @@ class CSSTransitionWalker {
         this.element.style.removeProperty('transition');
     }
 
-    private calcValue(transition:Transition, progress:number):number {
-        return transition.initValue + (transition.finalValue - transition.initValue) * progress;
+    private calcValue(transition:Transition, progress:number):number|Array<number> {
+        let result;
+        if (Array.isArray(transition.initValue) && Array.isArray(transition.finalValue)) {
+            result = transition.initValue.map((n, i) => this.calcValueNumber(n, transition.finalValue[i], progress));
+        } else if (!Array.isArray(transition.initValue) && !Array.isArray(transition.finalValue)) {
+            result = this.calcValueNumber(transition.initValue, transition.finalValue, progress);
+        }
+        return result
     }
 
-    private getValue(propertyValue:string):number {
-        // todo: support more complex property values: background-color, transform, etc.
-        return parseFloat(propertyValue);
+    private calcValueNumber(initValue:number, finalValue:number, progress:number):number {
+        return initValue + (finalValue - initValue) * progress;
+    }
+
+    private getValue(propertyValue:string):number|Array<number> {
+        // todo: support more complex propertyName values: background-color, transform, etc.
+        let value;
+        if (/matrix/.test(propertyValue)) {
+            const matrixCopy = propertyValue.replace(/^\w*\(/, '').replace(')', '');
+            value = matrixCopy.split(/\s*,\s*/).map(n => parseFloat(n));
+        } else {
+            value = parseFloat(propertyValue);
+        }
+        return value;
     }
 
     private getUnit(propertyValue:string):string {
@@ -78,9 +102,9 @@ class CSSTransitionWalker {
 }
 
 interface Transition {
-    property:string;
-    initValue:number;
-    finalValue:number;
+    propertyName:string;
+    initValue:number|Array<number>;
+    finalValue:number|Array<number>;
     unit:string;
 }
 
@@ -91,5 +115,6 @@ const supportedProperties = [
     "top",
     "left",
     "right",
-    "bottom"
+    "bottom",
+    "transform"
 ];
