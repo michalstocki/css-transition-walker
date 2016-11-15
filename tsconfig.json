@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["dom", "es5"],
+    "types": [
+      "mocha",
+      "chai"
+    ]
+  }
+}
