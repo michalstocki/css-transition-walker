@@ -108,4 +108,3 @@ var supportedProperties = [
     "bottom",
     "transform"
 ];
-//# sourceMappingURL=CSSTransitionWalker.js.map
