@@ -73,6 +73,8 @@ var CSSTransitionWalker = (function () {
             var init = transition.initValue;
             var final = transition.finalValue;
             result = mat4.add(mat4.create(), init, mat4.multiplyScalar(mat4.create(), mat4.subtract(mat4.create(), final, init), progress));
+            var perspective = mat4.perspective(mat4.create(), 0.785398163, 1.5, 800, 900);
+            result = mat4.multiply(mat4.create(), result, perspective);
         }
         else if (!Array.isArray(transition.initValue) && !Array.isArray(transition.finalValue)) {
             result = this.calcValueNumber(transition.initValue, transition.finalValue, progress);
