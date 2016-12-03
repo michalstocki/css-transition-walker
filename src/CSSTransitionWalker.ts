@@ -1,3 +1,4 @@
+const mat4 = (<any>window).mat4;
 class CSSTransitionWalker {
 
     private initStyleList:{[property:string]:string} = {};
@@ -40,9 +41,9 @@ class CSSTransitionWalker {
     public goTo(progress:number):void {
         this.disableTransition();
         for (const transition of this.transitions) {
-            const currentValue = this.calcValue(transition, progress);
+            const currentValue:any = this.calcValue(transition, progress);
             let currentCSSValue:string;
-            if (Array.isArray(currentValue)) {
+            if (currentValue.BYTES_PER_ELEMENT) {
                 currentCSSValue = `matrix3d(${currentValue.join(', ')})`;
             } else {
                 currentCSSValue = currentValue + transition.unit;
@@ -69,10 +70,20 @@ class CSSTransitionWalker {
         this.element.style.removeProperty('transition');
     }
 
-    private calcValue(transition:Transition, progress:number):number|Array<number> {
+    private calcValue(transition:Transition, progress:number):number|Float32Array {
         let result;
-        if (Array.isArray(transition.initValue) && Array.isArray(transition.finalValue)) {
-            result = transition.initValue.map((n, i) => this.calcValueNumber(n, transition.finalValue[i], progress));
+        if (transition.initValue.BYTES_PER_ELEMENT && transition.finalValue.BYTES_PER_ELEMENT) {
+            const init = transition.initValue;
+            const final = transition.finalValue;
+
+            result = mat4.add(mat4.create(),
+                init,
+                mat4.multiplyScalar(
+                    mat4.create(),
+                    mat4.subtract(mat4.create(), final, init),
+                    progress
+                )
+            );
         } else if (!Array.isArray(transition.initValue) && !Array.isArray(transition.finalValue)) {
             result = this.calcValueNumber(transition.initValue, transition.finalValue, progress);
         }
@@ -88,7 +99,8 @@ class CSSTransitionWalker {
         let value;
         if (/matrix/.test(propertyValue)) {
             const matrixCopy = propertyValue.replace(/^\w*\(/, '').replace(')', '');
-            value = matrixCopy.split(/\s*,\s*/).map(n => parseFloat(n));
+            const matrixArray = matrixCopy.split(/\s*,\s*/).map(n => parseFloat(n));
+            value = mat4.fromValues(...matrixArray);
         } else {
             value = parseFloat(propertyValue);
         }
@@ -103,8 +115,8 @@ class CSSTransitionWalker {
 
 interface Transition {
     propertyName:string;
-    initValue:number|Array<number>;
-    finalValue:number|Array<number>;
+    initValue:number|any;
+    finalValue:number|any;
     unit:string;
 }
 

@@ -1,3 +1,4 @@
+var mat4 = window.mat4;
 var CSSTransitionWalker = (function () {
     function CSSTransitionWalker(element) {
         this.element = element;
@@ -41,7 +42,7 @@ var CSSTransitionWalker = (function () {
             var transition = _a[_i];
             var currentValue = this.calcValue(transition, progress);
             var currentCSSValue = void 0;
-            if (Array.isArray(currentValue)) {
+            if (currentValue.BYTES_PER_ELEMENT) {
                 currentCSSValue = "matrix3d(" + currentValue.join(', ') + ")";
             }
             else {
@@ -67,10 +68,11 @@ var CSSTransitionWalker = (function () {
         this.element.style.removeProperty('transition');
     };
     CSSTransitionWalker.prototype.calcValue = function (transition, progress) {
-        var _this = this;
         var result;
-        if (Array.isArray(transition.initValue) && Array.isArray(transition.finalValue)) {
-            result = transition.initValue.map(function (n, i) { return _this.calcValueNumber(n, transition.finalValue[i], progress); });
+        if (transition.initValue.BYTES_PER_ELEMENT && transition.finalValue.BYTES_PER_ELEMENT) {
+            var init = transition.initValue;
+            var final = transition.finalValue;
+            result = mat4.add(mat4.create(), init, mat4.multiplyScalar(mat4.create(), mat4.subtract(mat4.create(), final, init), progress));
         }
         else if (!Array.isArray(transition.initValue) && !Array.isArray(transition.finalValue)) {
             result = this.calcValueNumber(transition.initValue, transition.finalValue, progress);
@@ -85,7 +87,8 @@ var CSSTransitionWalker = (function () {
         var value;
         if (/matrix/.test(propertyValue)) {
             var matrixCopy = propertyValue.replace(/^\w*\(/, '').replace(')', '');
-            value = matrixCopy.split(/\s*,\s*/).map(function (n) { return parseFloat(n); });
+            var matrixArray = matrixCopy.split(/\s*,\s*/).map(function (n) { return parseFloat(n); });
+            value = mat4.fromValues.apply(mat4, matrixArray);
         }
         else {
             value = parseFloat(propertyValue);
